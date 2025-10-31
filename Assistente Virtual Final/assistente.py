@@ -9,16 +9,19 @@ import wave
 import json
 import os
 
-from lampada import *
-from som import *
+from fonte_bancada import *
+from estacao_solda import *
+from monitor_energia import *
+from sensor_temperatura import *
+from registro_tarefas import *
 
 LINGUAGEM = "portuguese"
 FORMATO = pyaudio.paInt16
 CANAIS = 1
 AMOSTRAS = 1024
 TEMPO_GRAVACAO = 5
-CAMINHO_AUDIO_FALAS = "/misc/ifba/workspaces/inteligencia artificial/assistente virtual/temp"
-CONFIGURACOES = "/misc/ifba/workspaces/inteligencia artificial/assistente virtual/config.json"
+CAMINHO_AUDIO_FALAS = r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\temp"
+CONFIGURACOES = r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\config.json"
 
 MODO_LINHA_DE_COMANDO = 1
 MODO_WEB = 2
@@ -40,18 +43,37 @@ def iniciar(dispositivo):
     return modelo_iniciado, processador, modelo, gravador, palavras_de_parada, acoes
 
 def iniciar_atuadores():
+    """Inicializa todos os atuadores da bancada eletrônica"""
     atuadores = []
 
-    if iniciar_lampada():
+    if iniciar_fonte_bancada():
         atuadores.append({
-            "nome": "lâmpada",
-            "atuacao": atuar_sobre_lampada
+            "nome": "fonte de bancada",
+            "atuacao": atuar_sobre_fonte_bancada
         })
 
-    if iniciar_som():
+    if iniciar_estacao_solda():
         atuadores.append({
-            "nome": "sistema de som",
-            "atuacao": atuar_sobre_som
+            "nome": "estação de solda",
+            "atuacao": atuar_sobre_estacao_solda
+        })
+
+    if iniciar_monitor_energia():
+        atuadores.append({
+            "nome": "monitor de energia",
+            "atuacao": atuar_sobre_monitor_energia
+        })
+
+    if iniciar_sensor_temperatura():
+        atuadores.append({
+            "nome": "sensor de temperatura",
+            "atuacao": atuar_sobre_sensor_temperatura
+        })
+
+    if iniciar_registro_tarefas():
+        atuadores.append({
+            "nome": "sistema de registro",
+            "atuacao": atuar_sobre_registro_tarefas
         })
 
     return atuadores

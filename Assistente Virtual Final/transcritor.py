@@ -1,17 +1,38 @@
 from transformers import Wav2Vec2Processor, Wav2Vec2ForCTC
-import torchaudio
+import soundfile as sf
 import torch
+import numpy as np
 
 MODELO = "lgris/wav2vec2-large-xlsr-open-brazilian-portuguese-v2"
 
 AUDIOS = [
     {
-        "comando": "ligar a lâmpada",
-        "wav": "/misc/ifba/workspaces/inteligencia artificial/assistente virtual/audios/ligar lampada.wav"
+        "comando": "ligar fonte de bancada",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\ligar_fonte.wav"
     },
     {
-        "comando": "desligar a lâmpada",
-        "wav": "/misc/ifba/workspaces/inteligencia artificial/assistente virtual/audios/desligar lampada.wav"
+        "comando": "desligar fonte de bancada",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\desligar_fonte.wav"
+    },
+    {
+        "comando": "ligar estação de solda",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\ligar_solda.wav"
+    },
+    {
+        "comando": "desligar estação de solda",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\desligar_solda.wav"
+    },
+    {
+        "comando": "monitorar energia consumida",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\monitorar_energia.wav"
+    },
+    {
+        "comando": "verificar temperatura dos equipamentos",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\verificar_temperatura.wav"
+    },
+    {
+        "comando": "registrar nova tarefa de reparo",
+        "wav": r"c:\Users\Usuario\Desktop\AI\Assistente Virtual Final\audios\registrar_tarefa.wav"
     }
 ]
 
@@ -31,15 +52,31 @@ def iniciar_modelo(nome_modelo, dispositivo="cpu"):
 TAXA_AMOSTRAGEM = 16_000
 
 def carregar_fala(caminho_audio):
-    audio, amostragem = torchaudio.load(caminho_audio)
-    if audio.shape[0] > 1:
-        audio = torch.mean(audio, dim=0, keepdim=True)
-
+    """Carrega arquivo de áudio usando soundfile (mais compatível)"""
+    # Carrega o áudio com soundfile
+    audio, amostragem = sf.read(caminho_audio, dtype='float32')
+    
+    # Converte para tensor
+    audio = torch.from_numpy(audio)
+    
+    # Se for estéreo, converte para mono
+    if len(audio.shape) > 1:
+        audio = torch.mean(audio, dim=1)
+    
+    # Reamostrar se necessário
     if amostragem != TAXA_AMOSTRAGEM:
-        adaptador_amostragem = torchaudio.transforms.Resample(amostragem, TAXA_AMOSTRAGEM)
-        audio = adaptador_amostragem(audio)
-
-    return audio.squeeze()
+        # Cálculo simples de reamostragem
+        duracao = len(audio) / amostragem
+        novo_tamanho = int(duracao * TAXA_AMOSTRAGEM)
+        indices = torch.linspace(0, len(audio) - 1, novo_tamanho)
+        audio = torch.nn.functional.interpolate(
+            audio.unsqueeze(0).unsqueeze(0),
+            size=novo_tamanho,
+            mode='linear',
+            align_corners=True
+        ).squeeze()
+    
+    return audio
 
 def transcrever_fala(dispositivo, fala, modelo, processador):
     entrada = processador(fala, return_tensors="pt", sampling_rate=TAXA_AMOSTRAGEM).input_values.to(dispositivo)

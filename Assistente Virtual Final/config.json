@@ -3,43 +3,87 @@
             {
                 "nome": "ligar",
                 "dispositivos": [
-                    "lâmpada",
-                    "ventilador",
-                    "televisão"
+                    "fonte",
+                    "fonte de bancada",
+                    "bancada",
+                    "solda",
+                    "estação",
+                    "estação de solda",
+                    "ferro"
                 ]
             },
             {
                 "nome": "desligar",
                 "dispositivos": [
-                    "lâmpada",
-                    "ventilador",
-                    "televisão"
+                    "fonte",
+                    "fonte de bancada",
+                    "bancada",
+                    "solda",
+                    "estação",
+                    "estação de solda",
+                    "ferro"
                 ]
             },
             {
-                "nome": "acender",
+                "nome": "monitorar",
                 "dispositivos": [
-                    "lâmpada"
+                    "energia",
+                    "consumo",
+                    "watts",
+                    "potência"
                 ]
             },
             {
-                "nome": "apagar",
+                "nome": "verificar",
                 "dispositivos": [
-                    "lâmpada"
+                    "temperatura",
+                    "calor",
+                    "equipamentos",
+                    "aquecimento",
+                    "energia",
+                    "consumo"
                 ]
             },
             {
-                "nome": "tocar",
+                "nome": "medir",
                 "dispositivos": [
-                    "som",
-                    "música"
+                    "temperatura",
+                    "energia",
+                    "consumo"
                 ]
             },
             {
-                "nome": "parar",
+                "nome": "checar",
                 "dispositivos": [
-                    "som",
-                    "música"
+                    "temperatura",
+                    "energia",
+                    "consumo"
+                ]
+            },
+            {
+                "nome": "registrar",
+                "dispositivos": [
+                    "tarefa",
+                    "reparo",
+                    "manutenção",
+                    "registro",
+                    "log"
+                ]
+            },
+            {
+                "nome": "anotar",
+                "dispositivos": [
+                    "tarefa",
+                    "reparo",
+                    "manutenção"
+                ]
+            },
+            {
+                "nome": "salvar",
+                "dispositivos": [
+                    "tarefa",
+                    "reparo",
+                    "registro"
                 ]
             }
     ]
