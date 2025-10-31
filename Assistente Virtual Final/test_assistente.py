@@ -1,7 +1,3 @@
-"""
-Testes automatizados do Assistente Virtual para Bancada Eletrônica
-Utiliza UNITTEST para validar todos os comandos do assistente
-"""
 import unittest
 import torch
 import os
@@ -19,7 +15,7 @@ class TestAssistenteVirtual(unittest.TestCase):
     
     @classmethod
     def setUpClass(cls):
-        """Configuração inicial executada uma vez antes de todos os testes"""
+        """Configuração inicial executada uma vezantes  de todos os testes"""
         print("\n" + "="*70)
         print("INICIANDO TESTES DO ASSISTENTE VIRTUAL - BANCADA ELETRÔNICA")
         print("="*70 + "\n")

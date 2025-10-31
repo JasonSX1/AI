@@ -9,15 +9,19 @@ import random
 estado_estacao = {
     "ligada": False,
     "temperatura_alvo": 350,  # Celsius
-    "temperatura_atual": 25,  # Temperatura ambiente
+    "temperatura_atual": random.randint(22, 28),  # Temperatura ambiente
     "pronta": False
 }
+
+def obter_temperatura_ambiente():
+    """Retorna temperatura ambiente simulada"""
+    return random.randint(22, 28)
 
 def iniciar_estacao_solda():
     """Inicializa a estação de solda"""
     print("[SISTEMA] Estação de solda inicializada")
     estado_estacao["ligada"] = False
-    estado_estacao["temperatura_atual"] = 25
+    estado_estacao["temperatura_atual"] = obter_temperatura_ambiente()
     estado_estacao["pronta"] = False
     return True
 
@@ -60,6 +64,7 @@ def atuar_sobre_estacao_solda(acao, dispositivo):
             
             estado_estacao["ligada"] = False
             estado_estacao["pronta"] = False
+            # Temperatura cai gradualmente até ambiente
             temp_resfriamento = random.randint(40, 80)
             
             mensagem = f"✅ ESTAÇÃO DE SOLDA DESLIGADA\n  └─ Resfriando... Temperatura: {temp_resfriamento}°C\n  └─ ATENÇÃO: Aguarde resfriamento"
@@ -78,4 +83,14 @@ def atuar_sobre_estacao_solda(acao, dispositivo):
 
 def obter_estado_estacao():
     """Retorna o estado atual da estação"""
+    # Se desligada, temperatura cai gradualmente para ambiente
+    if not estado_estacao["ligada"]:
+        temp_ambiente = obter_temperatura_ambiente()
+        if estado_estacao["temperatura_atual"] > temp_ambiente + 10:
+            # Ainda está resfriando
+            estado_estacao["temperatura_atual"] = max(temp_ambiente, estado_estacao["temperatura_atual"] - 5)
+        else:
+            # Já atingiu temperatura ambiente
+            estado_estacao["temperatura_atual"] = temp_ambiente
+    
     return estado_estacao.copy()

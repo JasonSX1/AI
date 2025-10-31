@@ -2,13 +2,11 @@
 const recordButton = document.getElementById('recordButton');
 const statusText = document.getElementById('statusText');
 const logContainer = document.getElementById('logContainer');
-const logPlaceholder = document.getElementById('logPlaceholder');
-const modeInfo = document.getElementById('modeInfo');
+const logPlaceholder = document.getElementById('logPlaceholder'); // Placeholder do log
 
 // Variáveis de controle
 let audioChunks = [];
 let isRecording = false;
-let isExtendedMode = false; // Modo de gravação estendida para tarefas
 let audioContext;
 let processor;
 let stream;
@@ -39,6 +37,7 @@ window.addEventListener('beforeunload', (e) => {
     }
 });
 
+
 // --- Funções de Gravação ---
 
 async function iniciarGravacao() {
@@ -59,7 +58,6 @@ async function iniciarGravacao() {
 
         audioChunks = [];
         isRecording = true;
-        isExtendedMode = false; // Reseta para modo normal
 
         processor.onaudioprocess = (e) => {
             if (!isRecording) return;
@@ -74,9 +72,9 @@ async function iniciarGravacao() {
         recordButton.textContent = '⏹️';
         definirStatus('🔴 Gravando... Fale agora!', 'gravando');
 
-        // Para automaticamente após 5 segundos (modo normal)
+        // Para automaticamente após 5 segundos
         recognitionTimer = setTimeout(() => {
-            if (isRecording && !isExtendedMode) {
+            if (isRecording) {
                 pararGravacao();
             }
         }, 5000);
@@ -96,22 +94,23 @@ function pararGravacao() {
     if (recognitionTimer) {
         clearTimeout(recognitionTimer);
     }
-    
+
     // Desabilita o botão durante o processamento
-    recordButton.disabled = true;
-    recordButton.classList.remove('recording', 'recording-extended');
+    recordButton.disabled = true; 
+    recordButton.classList.remove('recording');
     recordButton.textContent = '🎙️';
     definirStatus('⏳ Processando...', 'processando');
-    modeInfo.classList.remove('active');
 
     // Para o processamento de áudio
     if (processor) {
         processor.disconnect();
         processor = null;
     }
+
     if (stream) {
         stream.getTracks().forEach(track => track.stop());
     }
+
     if (audioContext) {
         audioContext.close();
     }
@@ -119,27 +118,6 @@ function pararGravacao() {
     // Converte os chunks em WAV
     const wavBlob = criarWAV(audioChunks);
     enviarAudio(wavBlob);
-}
-
-function ativarModoEstendido() {
-    if (!isRecording) return;
-
-    isExtendedMode = true;
-    recordButton.classList.remove('recording');
-    recordButton.classList.add('recording-extended');
-    definirStatus('📝 Gravando tarefa... Fale tudo que precisar!', 'gravando-ext');
-    modeInfo.classList.add('active');
-
-    // Limpa timer anterior e cria novo de 30 segundos
-    if (recognitionTimer) {
-        clearTimeout(recognitionTimer);
-    }
-
-    recognitionTimer = setTimeout(() => {
-        if (isRecording) {
-            pararGravacao();
-        }
-    }, 30000); // 30 segundos no modo estendido
 }
 
 // --- Processamento de Áudio e API ---
@@ -158,27 +136,13 @@ async function enviarAudio(audioBlob) {
             const data = await response.json();
 
             if (data.sucesso) {
-                // Verifica se é comando de registro de tarefa
-                if (data.acao === 'registrar' || data.acao === 'anotar' || data.acao === 'salvar') {
-                    // Detecta primeiro comando de registro - ativa modo estendido
-                    if (data.transcricao && !isExtendedMode && isRecording) {
-                        ativarModoEstendido();
-                        adicionarLog(data.transcricao, '📝 Modo de registro ativado! Continue falando...', true);
-                        recordButton.disabled = false; // Reabilita o botão para permitir parar manualmente
-                        return; // Não para a gravação
-                    }
-                }
-
-                // Adiciona log de sucesso
                 const mensagens = data.mensagens ? data.mensagens.join('\n') : 'Comando executado';
                 adicionarLog(data.transcricao, mensagens, true);
                 definirStatus('✅ Comando executado!', 'sucesso');
-
             } else {
-                // Comando não reconhecido
                 const mensagens = data.mensagens ? data.mensagens.join('\n') : 'Comando não reconhecido';
                 adicionarLog(data.transcricao, mensagens, false);
-                definirStatus('⚠️ ' + (data.sugestao || 'Comando não reconhecido'), 'aviso');
+                definirStatus('⚠️ Comando não reconhecido', 'aviso');
             }
         } else {
             const errorData = await response.json().catch(() => ({}));
@@ -190,24 +154,16 @@ async function enviarAudio(audioBlob) {
         adicionarLog(null, '❌ Erro de conexão: ' + error.message, false);
         definirStatus('❌ Erro de conexão', 'erro');
     } finally {
+        // Reabilita o botão
+        recordButton.disabled = false;
+        
         // Atualiza estado dos equipamentos
         setTimeout(atualizarEstado, 500);
 
-        // Reabilita o botão e reseta o status (apenas se não estiver em modo estendido)
-        if (!isExtendedMode) {
-            recordButton.disabled = false;
-            setTimeout(() => {
-                definirStatus('Clique no microfone e fale');
-            }, 3000);
-        } else {
-            // Se estava em modo estendido, mas a gravação parou, reabilita
-            if (!isRecording) {
-                recordButton.disabled = false;
-                 setTimeout(() => {
-                    definirStatus('Clique no microfone e fale');
-                }, 3000);
-            }
-        }
+        // Reseta o texto de status
+        setTimeout(() => {
+            definirStatus('Clique no microfone e fale');
+        }, 3000);
     }
 }
 
@@ -216,7 +172,7 @@ async function atualizarEstado() {
         const response = await fetch('/estado');
         if (response.ok) {
             const data = await response.json();
-
+            
             // Atualiza Fonte de Bancada
             const fonte = data.fonte;
             document.getElementById('fonteStatus').className = 'status-indicator ' + (fonte.ligada ? 'status-on' : 'status-off');
@@ -231,31 +187,10 @@ async function atualizarEstado() {
             document.getElementById('estacaoEstado').textContent = estacao.ligada ? 'Ligada ✅' : 'Desligada ⭕';
             document.getElementById('estacaoTemp').textContent = estacao.temperatura_atual;
             document.getElementById('estacaoPronta').textContent = estacao.pronta ? 'Pronta ✅' : (estacao.ligada ? 'Aquecendo 🔥' : '-');
-
-            // Atualiza Temperatura Ambiente
-            if (data.temperatura_ambiente !== undefined) {
-                const tempAmbiente = data.temperatura_ambiente;
-                document.getElementById('tempAmbiente').textContent = tempAmbiente.toFixed(1); // Garante 1 casa decimal
-
-                // Status da temperatura ambiente
-                let statusAmb = '';
-                if (tempAmbiente < 20) statusAmb = '❄️ Frio';
-                else if (tempAmbiente <= 26) statusAmb = '✅ Ideal';
-                else if (tempAmbiente <= 30) statusAmb = '🌡️ Morno';
-                else statusAmb = '🔥 Quente';
-
-                document.getElementById('statusAmbiente').textContent = statusAmb;
-            } else {
-                 document.getElementById('tempAmbiente').textContent = '--';
-                 document.getElementById('statusAmbiente').textContent = 'Indisponível';
-            }
         }
     } catch (error) {
         console.error('Erro ao atualizar estado:', error);
-        // Atualiza a UI para mostrar o erro de conexão
-        document.getElementById('fonteEstado').textContent = 'Erro de conexão';
-        document.getElementById('estacaoEstado').textContent = 'Erro de conexão';
-        document.getElementById('statusAmbiente').textContent = 'Erro de conexão';
+        // Opcional: Adicionar um indicador de falha na UI
     }
 }
 
@@ -264,7 +199,7 @@ async function atualizarEstado() {
 /**
  * Define o texto e a classe de estilo para o statusText.
  * @param {string} texto - O texto a ser exibido.
- * @param {'gravando' | 'gravando-ext' | 'processando' | 'sucesso' | 'aviso' | 'erro' | null} tipo - A classe de estilo.
+ * @param {'gravando' | 'processando' | 'sucesso' | 'aviso' | 'erro' | null} tipo - A classe de estilo.
  */
 function definirStatus(texto, tipo = null) {
     statusText.textContent = texto;
@@ -277,7 +212,7 @@ function definirStatus(texto, tipo = null) {
 
 function adicionarLog(transcricao, mensagem, sucesso) {
     // Remove mensagem de "Aguardando" se ela existir
-    if (logPlaceholder && logPlaceholder.parentNode === logContainer) {
+    if (logPlaceholder.parentNode === logContainer) {
         logContainer.removeChild(logPlaceholder);
     }
 
@@ -294,8 +229,8 @@ function adicionarLog(transcricao, mensagem, sucesso) {
 
     logContainer.insertBefore(logEntry, logContainer.firstChild);
 
-    // Limita a 15 entradas no log
-    while (logContainer.children.length > 15) {
+    // Limita a 10 entradas no log
+    while (logContainer.children.length > 10) {
         logContainer.removeChild(logContainer.lastChild);
     }
 }

@@ -4,6 +4,7 @@ from inicializador_modelo import *
 from threading import Thread
 from transcritor import *
 from datetime import datetime
+from fuzzy_match import *
 import secrets
 import pyaudio
 import wave
@@ -129,12 +130,26 @@ def validar_comando(comando, acoes):
         acao = comando[0]
         dispositivo = comando[1]
 
+        # Tenta match exato primeiro
         for acao_prevista in acoes:
             if acao == acao_prevista["nome"]:
                 if dispositivo in acao_prevista["dispositivos"]:
                     valido = True
-
                     break
+        
+        # Se não encontrou match exato, tenta fuzzy matching
+        if not valido:
+            acao_corrigida = corrigir_acao(acao, acoes)
+            if acao_corrigida:
+                acao = acao_corrigida
+                for acao_prevista in acoes:
+                    if acao == acao_prevista["nome"]:
+                        dispositivo_corrigido = corrigir_dispositivo(dispositivo, acao_prevista["dispositivos"])
+                        if dispositivo_corrigido:
+                            dispositivo = dispositivo_corrigido
+                            valido = True
+                            print(f"[FUZZY] Comando corrigido: {acao} {dispositivo}")
+                            break
 
     return valido, acao, dispositivo
 
@@ -193,13 +208,18 @@ def obter_estado():
     """Retorna o estado atual de todos os equipamentos"""
     from fonte_bancada import obter_estado_fonte
     from estacao_solda import obter_estado_estacao
+    import random
     
     fonte = obter_estado_fonte()
     estacao = obter_estado_estacao()
     
+    # Temperatura ambiente simulada
+    temp_ambiente = random.randint(22, 28)
+    
     estado = {
         "fonte": fonte,
         "estacao": estacao,
+        "temperatura_ambiente": temp_ambiente,
         "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     }
     
