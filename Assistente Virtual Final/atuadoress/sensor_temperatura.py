@@ -4,8 +4,8 @@ Simula sensores de temperatura e emite alertas
 """
 from datetime import datetime
 import random
-from fonte_bancada import obter_estado_fonte
-from estacao_solda import obter_estado_estacao
+from atuadoress.fonte_bancada import obter_estado_fonte
+from atuadoress.estacao_solda import obter_estado_estacao
 
 # Limites de temperatura para alertas
 TEMP_MAXIMA_FONTE = 60      # °C
@@ -36,11 +36,12 @@ def atuar_sobre_sensor_temperatura(acao, dispositivo):
             fonte = obter_estado_fonte()
             estacao = obter_estado_estacao()
             
-            # Simula leituras de temperatura
-            temp_ambiente = random.randint(22, 28)
+            # --- MUDANÇA AQUI ---
+            # Busca a temperatura da nova função
+            temp_ambiente = obter_temperatura_ambiente() 
             
             if fonte["ligada"]:
-                temp_fonte = random.randint(35, 55)
+                temp_fonte = random.randint(35, 55) # Simulação interna da fonte
             else:
                 temp_fonte = temp_ambiente
             
@@ -55,11 +56,11 @@ def atuar_sobre_sensor_temperatura(acao, dispositivo):
             
             # Monta mensagem
             mensagem = f"""🌡️ LEITURA DE SENSORES
-  • Temperatura ambiente: {temp_ambiente}°C
-  • Fonte: {temp_fonte}°C - {'⚠️ ALERTA!' if alerta_fonte else '✅ Normal'}
-  • Estação: {temp_estacao}°C - {'⚠️ SUPERAQUECIMENTO!' if alerta_estacao else '✅ Normal' if estacao['ligada'] else '✅ Desligada'}
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━
-  {'⚠️ ATENÇÃO NECESSÁRIA' if (alerta_fonte or alerta_estacao) else '✅ PARÂMETROS NORMAIS'}"""
+ • Temperatura ambiente: {temp_ambiente:.1f}°C
+ • Fonte: {temp_fonte}°C - {'⚠️ ALERTA!' if alerta_fonte else '✅ Normal'}
+ • Estação: {temp_estacao}°C - {'⚠️ SUPERAQUECIMENTO!' if alerta_estacao else '✅ Normal' if estacao['ligada'] else '✅ Desligada'}
+ ━━━━━━━━━━━━━━━━━━━━━━━━━━
+ {'⚠️ ATENÇÃO NECESSÁRIA' if (alerta_fonte or alerta_estacao) else '✅ PARÂMETROS NORMAIS'}"""
             
             print(f"\n{'='*50}")
             print(f"[{timestamp}] {mensagem}")
@@ -78,6 +79,20 @@ def atuar_sobre_sensor_temperatura(acao, dispositivo):
             print(f"[AVISO] {mensagem}")
             return {"sucesso": False, "mensagem": mensagem}
     else:
-        mensagem = f"⚠️ Sensor de temperatura ignora comando para: {dispositivo}"
-        print(f"[AVISO] {mensagem}")
-        return {"sucesso": False, "mensagem": mensagem}
+        # Permite que o assistente ignore este atuador se não for para ele
+        return None 
+
+# --- FUNÇÃO QUE FALTAVA ---
+def obter_temperatura_ambiente():
+    """
+    Simula a leitura do sensor de temperatura ambiente.
+    Esta é a função que o endpoint /estado chama.
+    Retorna um valor float simulado ou None.
+    """
+    try:
+        # Simula uma leitura com uma casa decimal, ex: 24.5
+        temp_simulada = round(random.uniform(22.0, 28.0), 1)
+        return temp_simulada
+    except Exception as e:
+        print(f"[ERRO] Falha ao ler sensor de temperatura: {e}")
+        return None # Retorna None em caso de falha

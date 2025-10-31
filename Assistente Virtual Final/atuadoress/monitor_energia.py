@@ -3,8 +3,8 @@ Módulo para monitoramento de energia da bancada
 Calcula e exibe consumo energético dos equipamentos
 """
 from datetime import datetime
-from fonte_bancada import obter_estado_fonte
-from estacao_solda import obter_estado_estacao
+from atuadoress.fonte_bancada import obter_estado_fonte
+from atuadoress.estacao_solda import obter_estado_estacao
 
 # Consumos típicos em Watts
 CONSUMO_ESTACAO_SOLDA = 60  # 60W quando ligada
