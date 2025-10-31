@@ -1,0 +1,38 @@
+{
+    "acoes": [
+        {
+            "nome": "ligar",
+            "dispositivos":["lâmpada", 
+            "televisão", 
+            "ar condicionado", 
+            "ventilador", 
+            "máquina de lavar louças"]
+        },
+        {
+            "nome": "desligar",
+            "dispositivos":["lâmpada", 
+            "televisão", 
+            "ar condicionado", 
+            "ventilador", 
+            "máquina de lavar louças"]
+        },
+        {
+            "nome": "acender",
+            "dispositivos":["lâmpada"]
+        },
+        {
+            "nome": "apagar",
+            "dispositivos":["lâmpada"]
+        },
+        {
+            "nome": "tocar",
+            "dispositivos":["som", 
+            "música"]
+        },
+        {
+            "nome": "parar",
+            "dispositivos":["som", 
+            "música"]
+        }
+    ]
+}

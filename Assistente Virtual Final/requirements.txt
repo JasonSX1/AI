@@ -1,0 +1,9 @@
+transformers
+# torchcodec==0.6.0
+torchaudio==2.9.0
+PySoundFile
+soundfile
+pyaudio
+flask                                                                                                                               
+torch
+nltk
