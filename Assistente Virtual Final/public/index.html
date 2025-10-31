@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="pt-br">
+<html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Assistente Doméstico</title>
+    <title>Assistente Virtual - Bancada Eletrônica</title>
     <style>
         /* Reset básico */
         * {
@@ -14,74 +14,262 @@
 
         /* Estilos da página */
         body {
-            font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            background: linear-gradient(to right, #4facfe, #00f2fe);
-            color: #333;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
         }
 
-        h1 {
-            font-size: 2.5rem;
-            color: #fff;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
-            text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
-        }
-
-        /* Estilos do botão */
-        #recordButton {
-            padding: 15px 30px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            color: #fff;
-            background-color: #ff6b6b;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-        }
-
-        #recordButton:hover {
-            background-color: #ff5252;
-        }
-
-        /* Estilos do status */
-        #status {
-            margin-top: 15px;
-            font-size: 1.2rem;
-            color: #fff;
-        }
-
-        /* Estilos da transcrição */
-        #transcription {
-            margin-top: 30px;
-            padding: 15px;
-            width: 80%;
-            max-width: 600px;
-            background-color: #fff;
-            border-radius: 10px;
-            box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.2);
-            color: #333;
-            font-size: 1.1rem;
             text-align: center;
-            min-height: 50px;
+        }
+
+        header h1 {
+            color: #667eea;
+            font-size: 2em;
+            margin-bottom: 5px;
+        }
+
+        header p {
+            color: #666;
+        }
+
+        .main-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .card h2 {
+            color: #667eea;
+            margin-bottom: 20px;
             display: flex;
             align-items: center;
-            justify-content: center;
+            gap: 10px;
+        }
+
+        /* Indicador de Status (bolinha) */
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .status-on {
+            background: #10b981;
+            box-shadow: 0 0 10px #10b981;
+        }
+
+        .status-off {
+            background: #ef4444;
+        }
+
+        .equipment-info {
+            background: #f8fafc;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .equipment-info:last-child {
+            margin-bottom: 0;
+        }
+
+        .equipment-info h3 {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #334155;
+            margin-bottom: 10px;
+        }
+
+        .equipment-info p {
+            margin: 8px 0 8px 22px; /* Alinha com o texto do h3 */
+            color: #475569;
+        }
+
+        .equipment-info strong {
+            color: #1e293b;
+        }
+
+        /* Botão de Gravação */
+        #recordButton {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            font-size: 3em;
+            cursor: pointer;
+            box-shadow: 0 8px 32px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            margin: 0 auto;
+            display: block;
+        }
+
+        #recordButton:hover:not(:disabled) {
+            transform: scale(1.05);
+            box-shadow: 0 12px 40px rgba(102, 126, 234, 0.6);
+        }
+
+        #recordButton:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        #recordButton.recording {
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        /* Texto de Status (abaixo do botão) */
+        .status-text {
+            text-align: center;
+            margin-top: 15px;
+            color: #475569;
+            font-weight: 600;
+        }
+
+        /* Classes de estado para o JS */
+        .status-text.gravando { color: #ef4444; }
+        .status-text.processando { color: #667eea; }
+        .status-text.sucesso { color: #10b981; }
+        .status-text.aviso { color: #f59e0b; }
+        .status-text.erro { color: #ef4444; }
+
+
+        /* Seção de Log */
+        .log-container {
+            background: #f8fafc; /* Cor de fundo para o container do log */
+            padding: 10px;
+            border-radius: 10px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 15px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+            background: white; /* Cada entrada de log com fundo branco */
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+        
+        .log-entry:last-child {
+            margin-bottom: 0;
+        }
+
+        .log-entry.success {
+            border-left-color: #10b981;
+        }
+
+        .log-entry.error {
+            border-left-color: #ef4444;
+        }
+
+        .log-entry .timestamp {
+            font-size: 0.85em;
+            color: #94a3b8;
+            margin-bottom: 5px;
+        }
+
+        .log-entry .transcription {
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 8px;
+        }
+
+        .log-entry .message {
+            color: #475569;
+            white-space: pre-line;
+            font-size: 0.95em;
+        }
+
+        .full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Responsividade */
+        @media (max-width: 768px) {
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Assistente Doméstico</h1>
-    <button id="recordButton">Iniciar Gravação</button>
-    <p id="status">Esperando</p>
-    <div id="transcription">O comando aparecerá aqui</div>
+    <div class="container">
+        <header>
+            <h1>🔧 Assistente Virtual - Bancada Eletrônica</h1>
+            <p>Controle por voz dos equipamentos da bancada</p>
+        </header>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/recorderjs/0.1.0/recorder.js"></script>
+        <div class="main-grid">
+            <div class="card">
+                <h2>🎤 Controle por Voz</h2>
+                <button id="recordButton" title="Clique para falar">🎙️</button>
+                <p class="status-text" id="statusText">Clique no microfone e fale</p>
+            </div>
+
+            <div class="card">
+                <h2>📊 Status dos Equipamentos</h2>
+                <div class="equipment-info">
+                    <h3>
+                        <span class="status-indicator status-off" id="fonteStatus"></span>
+                        Fonte de Bancada
+                    </h3>
+                    <p><strong>Estado:</strong> <span id="fonteEstado">Desligada</span></p>
+                    <p><strong>Tensão:</strong> <span id="fonteTensao">0.0</span> V</p>
+                    <p><strong>Corrente:</strong> <span id="fonteCorrente">0.00</span> A</p>
+                    <p><strong>Potência:</strong> <span id="fontePotencia">0.00</span> W</p>
+                </div>
+
+                <div class="equipment-info">
+                    <h3>
+                        <span class="status-indicator status-off" id="estacaoStatus"></span>
+                        Estação de Solda
+                    </h3>
+                    <p><strong>Estado:</strong> <span id="estacaoEstado">Desligada</span></p>
+                    <p><strong>Temperatura:</strong> <span id="estacaoTemp">25</span> °C</p>
+                    <p><strong>Status:</strong> <span id="estacaoPronta">-</span></p>
+                </div>
+            </div>
+
+            <div class="card full-width">
+                <h2>📝 Log de Atividades</h2>
+                <div class="log-container" id="logContainer">
+                    <p id="logPlaceholder" style="text-align: center; color: #94a3b8;">Aguardando comandos...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="script.js"></script>
 </body>
 </html>

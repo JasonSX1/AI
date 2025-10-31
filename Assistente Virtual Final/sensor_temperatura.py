@@ -24,6 +24,9 @@ def atuar_sobre_sensor_temperatura(acao, dispositivo):
     Args:
         acao: 'verificar', 'medir', 'checar'
         dispositivo: 'temperatura', 'calor', 'equipamentos'
+        
+    Returns:
+        dict: Resultado da operação com status e mensagem
     """
     if dispositivo in ["temperatura", "calor", "equipamentos", "aquecimento"]:
         if acao in ["verificar", "medir", "checar", "monitorar"]:
@@ -46,40 +49,35 @@ def atuar_sobre_sensor_temperatura(acao, dispositivo):
             else:
                 temp_estacao = temp_ambiente
             
-            # Exibe relatório
+            # Verifica alertas
+            alerta_fonte = temp_fonte >= TEMP_MAXIMA_FONTE
+            alerta_estacao = estacao["ligada"] and temp_estacao > TEMP_MAXIMA_ESTACAO
+            
+            # Monta mensagem
+            mensagem = f"""🌡️ LEITURA DE SENSORES
+  • Temperatura ambiente: {temp_ambiente}°C
+  • Fonte: {temp_fonte}°C - {'⚠️ ALERTA!' if alerta_fonte else '✅ Normal'}
+  • Estação: {temp_estacao}°C - {'⚠️ SUPERAQUECIMENTO!' if alerta_estacao else '✅ Normal' if estacao['ligada'] else '✅ Desligada'}
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━
+  {'⚠️ ATENÇÃO NECESSÁRIA' if (alerta_fonte or alerta_estacao) else '✅ PARÂMETROS NORMAIS'}"""
+            
             print(f"\n{'='*50}")
-            print(f"[{timestamp}] LEITURA DE SENSORES DE TEMPERATURA")
-            print(f"{'='*50}")
-            print(f"  🌡️  Temperatura ambiente: {temp_ambiente}°C")
-            
-            # Fonte de bancada
-            status_fonte = "✅ NORMAL" if temp_fonte < TEMP_MAXIMA_FONTE else "⚠️  ALERTA!"
-            print(f"  🔌 Fonte de bancada: {temp_fonte}°C - {status_fonte}")
-            
-            if temp_fonte >= TEMP_MAXIMA_FONTE:
-                print(f"     ⚠️  ATENÇÃO: Temperatura acima do limite seguro ({TEMP_MAXIMA_FONTE}°C)")
-                print(f"     ⚠️  Recomendação: Desligue e aguarde resfriamento")
-            
-            # Estação de solda
-            if estacao["ligada"]:
-                if temp_estacao > TEMP_MAXIMA_ESTACAO:
-                    status_estacao = "⚠️  SUPERAQUECIMENTO!"
-                    print(f"  🔥 Estação de solda: {temp_estacao}°C - {status_estacao}")
-                    print(f"     ⚠️  PERIGO: Temperatura crítica detectada!")
-                else:
-                    status_estacao = "✅ OPERACIONAL"
-                    print(f"  🔥 Estação de solda: {temp_estacao}°C - {status_estacao}")
-            else:
-                print(f"  🔥 Estação de solda: {temp_estacao}°C - ✅ DESLIGADA")
-            
-            # Alerta geral
-            print(f"  {'─'*46}")
-            if temp_fonte >= TEMP_MAXIMA_FONTE or temp_estacao > TEMP_MAXIMA_ESTACAO:
-                print(f"  ⚠️  STATUS GERAL: ATENÇÃO NECESSÁRIA")
-            else:
-                print(f"  ✅ STATUS GERAL: TODOS OS PARÂMETROS NORMAIS")
+            print(f"[{timestamp}] {mensagem}")
             print(f"{'='*50}\n")
+            
+            return {
+                "sucesso": True,
+                "mensagem": mensagem,
+                "temp_ambiente": temp_ambiente,
+                "temp_fonte": temp_fonte,
+                "temp_estacao": temp_estacao,
+                "alerta": alerta_fonte or alerta_estacao
+            }
         else:
-            print(f"[AVISO] Sensor de temperatura não reconhece a ação: {acao}")
+            mensagem = f"⚠️ Sensor de temperatura não reconhece a ação: {acao}"
+            print(f"[AVISO] {mensagem}")
+            return {"sucesso": False, "mensagem": mensagem}
     else:
-        print(f"[AVISO] Sensor de temperatura ignora comando para: {dispositivo}")
+        mensagem = f"⚠️ Sensor de temperatura ignora comando para: {dispositivo}"
+        print(f"[AVISO] {mensagem}")
+        return {"sucesso": False, "mensagem": mensagem}

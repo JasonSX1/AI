@@ -3,6 +3,7 @@ from nltk import word_tokenize, corpus
 from inicializador_modelo import *
 from threading import Thread
 from transcritor import *
+from datetime import datetime
 import secrets
 import pyaudio
 import wave
@@ -138,10 +139,16 @@ def validar_comando(comando, acoes):
     return valido, acao, dispositivo
 
 def atuar(acao, dispositivo, atuadores):
+    """Executa atuação e retorna resultados"""
+    resultados = []
+    
     for atuador in atuadores:
         print(f"enviando comando para {atuador['nome']}")
-        atuacao = Thread(target=atuador["atuacao"], args=[acao, dispositivo])
-        atuacao.start()
+        resultado = atuador["atuacao"](acao, dispositivo)
+        if resultado:
+            resultados.append(resultado)
+    
+    return resultados
 
 ############################## linha de comando
 
@@ -181,6 +188,23 @@ def acessar_pagina():
 def acessar_pasta_estatica(caminho):
     return send_from_directory("public", caminho)
 
+@servico.get("/estado")
+def obter_estado():
+    """Retorna o estado atual de todos os equipamentos"""
+    from fonte_bancada import obter_estado_fonte
+    from estacao_solda import obter_estado_estacao
+    
+    fonte = obter_estado_fonte()
+    estacao = obter_estado_estacao()
+    
+    estado = {
+        "fonte": fonte,
+        "estacao": estacao,
+        "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    }
+    
+    return Response(json.dumps(estado, ensure_ascii=False), status=200, mimetype='application/json; charset=utf-8')
+
 @servico.post("/reconhecer_comando")
 def reconhecer_comando():
     if "fala" not in request.files:
@@ -199,15 +223,37 @@ def reconhecer_comando():
         if valido:
             print(f"comando válido, executar atuação")
 
-            atuar(acao, dispositivo_alvo, servico.config["atuadores"])
+            resultados = atuar(acao, dispositivo_alvo, servico.config["atuadores"])
+            
+            # Coleta mensagens dos resultados
+            mensagens = []
+            for resultado in resultados:
+                if resultado and "mensagem" in resultado:
+                    mensagens.append(resultado["mensagem"])
+            
+            resposta = {
+                "transcricao": transcricao,
+                "acao": acao,
+                "dispositivo": dispositivo_alvo,
+                "sucesso": True,
+                "mensagens": mensagens,
+                "resultados": resultados
+            }
 
-            return Response(json.dumps({"transcricao": transcricao}), status=200)
+            return Response(json.dumps(resposta, ensure_ascii=False), status=200, mimetype='application/json; charset=utf-8')
         else:
-            return Response(json.dumps({"transcricao": "Comando não reconhecido."}), status=200)
+            return Response(json.dumps({
+                "transcricao": transcricao,
+                "sucesso": False,
+                "mensagens": ["⚠️ Comando não reconhecido"]
+            }, ensure_ascii=False), status=200, mimetype='application/json; charset=utf-8')
     except Exception as e:
         print(f"erro ao processar fala: {str(e)}")
 
-        return Response(status=500)
+        return Response(json.dumps({
+            "sucesso": False,
+            "mensagens": [f"❌ Erro ao processar: {str(e)}"]
+        }, ensure_ascii=False), status=500, mimetype='application/json; charset=utf-8')
     finally:
         if os.path.exists(caminho_arquivo):
             os.remove(caminho_arquivo)

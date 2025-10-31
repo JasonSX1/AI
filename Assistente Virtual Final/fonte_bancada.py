@@ -28,31 +28,50 @@ def atuar_sobre_fonte_bancada(acao, dispositivo):
     Args:
         acao: 'ligar' ou 'desligar'
         dispositivo: 'fonte' ou variações
+        
+    Returns:
+        dict: Resultado da operação com status e mensagem
     """
     if dispositivo in ["fonte", "fonte de bancada", "bancada"]:
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         
         if acao == "ligar":
+            # Verifica se já está ligada
+            if estado_fonte["ligada"]:
+                mensagem = "⚠️ FONTE JÁ ESTÁ LIGADA"
+                print(f"[{timestamp}] {mensagem}")
+                return {"sucesso": False, "mensagem": mensagem, "estado": estado_fonte.copy()}
+            
             estado_fonte["ligada"] = True
             estado_fonte["corrente"] = 0.5  # Corrente inicial em Amperes
             estado_fonte["potencia"] = estado_fonte["tensao"] * estado_fonte["corrente"]
             
-            print(f"[{timestamp}] FONTE DE BANCADA LIGADA")
-            print(f"  └─ Tensão: {estado_fonte['tensao']}V")
-            print(f"  └─ Corrente: {estado_fonte['corrente']}A")
-            print(f"  └─ Potência: {estado_fonte['potencia']:.2f}W")
+            mensagem = f"✅ FONTE DE BANCADA LIGADA\n  └─ Tensão: {estado_fonte['tensao']}V\n  └─ Corrente: {estado_fonte['corrente']}A\n  └─ Potência: {estado_fonte['potencia']:.2f}W"
+            print(f"[{timestamp}] {mensagem}")
+            return {"sucesso": True, "mensagem": mensagem, "estado": estado_fonte.copy()}
             
         elif acao == "desligar":
+            # Verifica se já está desligada
+            if not estado_fonte["ligada"]:
+                mensagem = "⚠️ FONTE JÁ ESTÁ DESLIGADA"
+                print(f"[{timestamp}] {mensagem}")
+                return {"sucesso": False, "mensagem": mensagem, "estado": estado_fonte.copy()}
+            
             estado_fonte["ligada"] = False
             estado_fonte["corrente"] = 0.0
             estado_fonte["potencia"] = 0.0
             
-            print(f"[{timestamp}] FONTE DE BANCADA DESLIGADA")
-            print(f"  └─ Consumo de energia zerado")
+            mensagem = "✅ FONTE DE BANCADA DESLIGADA\n  └─ Consumo de energia zerado"
+            print(f"[{timestamp}] {mensagem}")
+            return {"sucesso": True, "mensagem": mensagem, "estado": estado_fonte.copy()}
         else:
-            print(f"[AVISO] Fonte de bancada não reconhece a ação: {acao}")
+            mensagem = f"⚠️ Fonte de bancada não reconhece a ação: {acao}"
+            print(f"[AVISO] {mensagem}")
+            return {"sucesso": False, "mensagem": mensagem, "estado": estado_fonte.copy()}
     else:
-        print(f"[AVISO] Fonte de bancada ignora comando para: {dispositivo}")
+        mensagem = f"⚠️ Fonte de bancada ignora comando para: {dispositivo}"
+        print(f"[AVISO] {mensagem}")
+        return {"sucesso": False, "mensagem": mensagem, "estado": estado_fonte.copy()}
 
 def obter_estado_fonte():
     """Retorna o estado atual da fonte"""

@@ -22,6 +22,9 @@ def atuar_sobre_monitor_energia(acao, dispositivo):
     Args:
         acao: 'monitorar', 'verificar', 'medir'
         dispositivo: 'energia', 'consumo'
+        
+    Returns:
+        dict: Resultado da operação com status e mensagem
     """
     if dispositivo in ["energia", "consumo", "watts", "potência"]:
         if acao in ["monitorar", "verificar", "medir", "checar"]:
@@ -34,33 +37,36 @@ def atuar_sobre_monitor_energia(acao, dispositivo):
             # Calcula consumo total
             consumo_total = CONSUMO_BASE_BANCADA
             
-            if fonte["ligada"]:
-                consumo_total += fonte["potencia"]
+            consumo_fonte = fonte["potencia"] if fonte["ligada"] else 0
+            consumo_estacao = CONSUMO_ESTACAO_SOLDA if estacao["ligada"] else 0
             
-            if estacao["ligada"]:
-                consumo_total += CONSUMO_ESTACAO_SOLDA
+            consumo_total += consumo_fonte + consumo_estacao
             
-            # Exibe relatório
+            # Monta mensagem formatada
+            mensagem = f"""📊 RELATÓRIO DE CONSUMO ENERGÉTICO
+  • Consumo base: {CONSUMO_BASE_BANCADA}W
+  • Fonte de bancada: {consumo_fonte:.2f}W ({'LIGADA' if fonte['ligada'] else 'DESLIGADA'})
+  • Estação de solda: {consumo_estacao}W ({'LIGADA' if estacao['ligada'] else 'DESLIGADA'})
+  ━━━━━━━━━━━━━━━━━━━━━━━━━━
+  ⚡ CONSUMO TOTAL: {consumo_total:.2f}W
+  � Estimativa mensal: {(consumo_total * 8 * 30 / 1000):.2f} kWh"""
+            
             print(f"\n{'='*50}")
-            print(f"[{timestamp}] RELATÓRIO DE CONSUMO ENERGÉTICO")
-            print(f"{'='*50}")
-            print(f"  📊 Consumo base da bancada: {CONSUMO_BASE_BANCADA}W")
-            
-            if fonte["ligada"]:
-                print(f"  🔌 Fonte de bancada: {fonte['potencia']:.2f}W (LIGADA)")
-            else:
-                print(f"  🔌 Fonte de bancada: 0W (DESLIGADA)")
-            
-            if estacao["ligada"]:
-                print(f"  🔥 Estação de solda: {CONSUMO_ESTACAO_SOLDA}W (LIGADA)")
-            else:
-                print(f"  🔥 Estação de solda: 0W (DESLIGADA)")
-            
-            print(f"  {'─'*46}")
-            print(f"  ⚡ CONSUMO TOTAL: {consumo_total:.2f}W")
-            print(f"  💡 Estimativa mensal (8h/dia): {(consumo_total * 8 * 30 / 1000):.2f} kWh")
+            print(f"[{timestamp}] {mensagem}")
             print(f"{'='*50}\n")
+            
+            return {
+                "sucesso": True,
+                "mensagem": mensagem,
+                "consumo_total": consumo_total,
+                "consumo_fonte": consumo_fonte,
+                "consumo_estacao": consumo_estacao
+            }
         else:
-            print(f"[AVISO] Monitor de energia não reconhece a ação: {acao}")
+            mensagem = f"⚠️ Monitor de energia não reconhece a ação: {acao}"
+            print(f"[AVISO] {mensagem}")
+            return {"sucesso": False, "mensagem": mensagem}
     else:
-        print(f"[AVISO] Monitor de energia ignora comando para: {dispositivo}")
+        mensagem = f"⚠️ Monitor de energia ignora comando para: {dispositivo}"
+        print(f"[AVISO] {mensagem}")
+        return {"sucesso": False, "mensagem": mensagem}

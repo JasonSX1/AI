@@ -33,6 +33,9 @@ def atuar_sobre_registro_tarefas(acao, dispositivo):
     Args:
         acao: 'registrar', 'anotar', 'salvar'
         dispositivo: 'tarefa', 'reparo', 'manutenção'
+        
+    Returns:
+        dict: Resultado da operação com status e mensagem
     """
     if dispositivo in ["tarefa", "reparo", "manutenção", "registro", "log"]:
         if acao in ["registrar", "anotar", "salvar", "gravar"]:
@@ -74,24 +77,32 @@ def atuar_sobre_registro_tarefas(acao, dispositivo):
             with open(ARQUIVO_TAREFAS, "w", encoding="utf-8") as f:
                 json.dump(dados, f, ensure_ascii=False, indent=2)
             
-            # Exibe confirmação
+            # Monta mensagem
+            mensagem = f"""✅ TAREFA REGISTRADA
+  • ID: #{nova_tarefa['id']}
+  • Data: {data} às {hora}
+  • Descrição: {descricao}
+  • Total de tarefas: {len(dados['tarefas'])}"""
+            
             print(f"\n{'='*50}")
-            print(f"[{timestamp}] NOVA TAREFA REGISTRADA")
-            print(f"{'='*50}")
-            print(f"  📋 ID da tarefa: #{nova_tarefa['id']}")
-            print(f"  📅 Data: {data}")
-            print(f"  🕐 Hora: {hora}")
-            print(f"  📝 Descrição: {descricao}")
-            print(f"  💾 Salvo em: {ARQUIVO_TAREFAS}")
+            print(f"[{timestamp}] {mensagem}")
             print(f"{'='*50}\n")
             
-            # Mostra total de tarefas
-            print(f"  ℹ️  Total de tarefas registradas: {len(dados['tarefas'])}")
+            return {
+                "sucesso": True,
+                "mensagem": mensagem,
+                "tarefa": nova_tarefa,
+                "total": len(dados['tarefas'])
+            }
             
         else:
-            print(f"[AVISO] Sistema de registro não reconhece a ação: {acao}")
+            mensagem = f"⚠️ Sistema de registro não reconhece a ação: {acao}"
+            print(f"[AVISO] {mensagem}")
+            return {"sucesso": False, "mensagem": mensagem}
     else:
-        print(f"[AVISO] Sistema de registro ignora comando para: {dispositivo}")
+        mensagem = f"⚠️ Sistema de registro ignora comando para: {dispositivo}"
+        print(f"[AVISO] {mensagem}")
+        return {"sucesso": False, "mensagem": mensagem}
 
 def listar_tarefas():
     """Lista todas as tarefas registradas"""
