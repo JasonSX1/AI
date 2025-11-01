@@ -1,8 +1,0 @@
-transformers
-torchaudio==2.9.0
-PySoundFile
-soundfile
-pyaudio # no linux pode precisar: sudo apt install portaudio19-dev python3-pyaudio
-flask                                                                                                                               
-torch
-nltk
