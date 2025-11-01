@@ -153,7 +153,7 @@ class TestAssistenteVirtual(unittest.TestCase):
             arquivo_audio="monitorar_energia.wav",
             comando_esperado="Monitorar energia consumida",
             acao_esperada="monitorar",
-            dispositivo_esperado=["energia", "consumo", "watts", "potência"]
+            dispositivo_esperado=["energia", "energia consumida", "consumo"]
         )
     
     def test_06_verificar_temperatura(self):
@@ -166,7 +166,7 @@ class TestAssistenteVirtual(unittest.TestCase):
             arquivo_audio="verificar_temperatura.wav",
             comando_esperado="Verificar temperatura dos equipamentos",
             acao_esperada="verificar",
-            dispositivo_esperado=["temperatura", "calor", "equipamentos", "aquecimento"]
+            dispositivo_esperado=["temperatura", "temperatura equipamentos", "equipamentos"]
         )
     
     def test_07_registrar_tarefa(self):
@@ -192,8 +192,12 @@ class TestAssistenteVirtual(unittest.TestCase):
         self.assertTrue(os.path.exists(CONFIGURACOES), "Arquivo config.json não encontrado")
         print("✓ Arquivo config.json encontrado")
         
-        # Verifica estrutura
-        self.assertIn("acoes", self.acoes[0], "Estrutura JSON deve conter ações")
+        # Carrega o JSON completo para verificar estrutura
+        with open(CONFIGURACOES, "r", encoding="utf-8") as f:
+            config_completo = json.load(f)
+        
+        # Verifica se tem a chave "acoes"
+        self.assertIn("acoes", config_completo, "JSON deve conter chave 'acoes'")
         print("✓ Estrutura de ações presente")
         
         # Verifica se tem pelo menos 4 tipos de ações diferentes

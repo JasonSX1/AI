@@ -5,11 +5,8 @@
                 "dispositivos": [
                     "fonte",
                     "fonte de bancada",
-                    "bancada",
                     "solda",
-                    "estação",
-                    "estação de solda",
-                    "ferro"
+                    "estação de solda"
                 ]
             },
             {
@@ -17,73 +14,32 @@
                 "dispositivos": [
                     "fonte",
                     "fonte de bancada",
-                    "bancada",
                     "solda",
-                    "estação",
-                    "estação de solda",
-                    "ferro"
+                    "estação de solda"
                 ]
             },
             {
                 "nome": "monitorar",
                 "dispositivos": [
                     "energia",
+                    "energia consumida",
                     "consumo",
-                    "watts",
-                    "potência"
+                    "consumida"
                 ]
             },
             {
                 "nome": "verificar",
                 "dispositivos": [
                     "temperatura",
-                    "calor",
-                    "equipamentos",
-                    "aquecimento",
-                    "energia",
-                    "consumo"
-                ]
-            },
-            {
-                "nome": "medir",
-                "dispositivos": [
-                    "temperatura",
-                    "energia",
-                    "consumo"
-                ]
-            },
-            {
-                "nome": "checar",
-                "dispositivos": [
-                    "temperatura",
-                    "energia",
-                    "consumo"
+                    "temperatura equipamentos",
+                    "equipamentos"
                 ]
             },
             {
                 "nome": "registrar",
                 "dispositivos": [
                     "tarefa",
-                    "reparo",
-                    "manutenção",
-                    "registro",
-                    "log"
-                ]
-            },
-            {
-                "nome": "anotar",
-                "dispositivos": [
-                    "tarefa",
-                    "reparo",
-                    "manutenção"
-                ]
-            },
-            {
-                "nome": "salvar",
-                "dispositivos": [
-                    "tarefa",
-                    "reparo",
-                    "registro"
+                    "reparo"
                 ]
             }
     ]
