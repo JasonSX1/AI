@@ -93,31 +93,42 @@ def processar_transcricao(transcricao, palavras_de_parada):
 
 def validar_comando(comando, acoes):
     valido, acao, dispositivo = False, None, None
-    comando_str = " ".join(comando)
-
-    # --- LÓGICA MELHORADA PARA REGISTRO DE TAREFA ---
-    acoes_registro = ["registrar tarefa", "anotar tarefa", "salvar tarefa", "iniciar tarefa", "nova tarefa", "iniciar reparo", "novo reparo"]
-    for gatilho in acoes_registro:
-        if gatilho in comando_str:
-            valido = True
-            acao = "registrar" # Padroniza a ação
-            dispositivo = "tarefa" # Padroniza o dispositivo
-            print(f"[REGISTRO] Comando de registro detectado.")
-            return valido, acao, dispositivo
-    # --- FIM DA LÓGICA MELHORADA ---
-
+    
     if len(comando) >= 2:
         acao = comando[0]
         dispositivo = " ".join(comando[1:]) # Permite dispositivos com mais de uma palavra
 
-        # Tenta match exato primeiro
+        # Normaliza a ação usando sinônimos
+        acao_normalizada = None
         for acao_prevista in acoes:
+            # Verifica nome exato
             if acao == acao_prevista["nome"]:
-                if dispositivo in acao_prevista["dispositivos"]:
-                    valido = True
-                    break
+                acao_normalizada = acao_prevista["nome"]
+                break
+            # Verifica sinônimos
+            if "sinonimos" in acao_prevista and acao in acao_prevista["sinonimos"]:
+                acao_normalizada = acao_prevista["nome"]
+                break
         
-        # Se não encontrou match exato, tenta fuzzy matching
+        if acao_normalizada:
+            acao = acao_normalizada # Usa o nome canônico
+            
+            # Verifica dispositivo
+            for acao_prevista in acoes:
+                if acao == acao_prevista["nome"]:
+                    if dispositivo in acao_prevista["dispositivos"]:
+                        valido = True
+                        break
+                    
+                    # Tenta fuzzy matching no dispositivo se não for exato
+                    dispositivo_corrigido = corrigir_dispositivo(dispositivo, acao_prevista["dispositivos"])
+                    if dispositivo_corrigido:
+                        dispositivo = dispositivo_corrigido
+                        valido = True
+                        print(f"[FUZZY] Dispositivo corrigido: {dispositivo}")
+                        break
+
+        # Se não encontrou match exato na ação, tenta fuzzy matching
         if not valido:
             acao_corrigida = corrigir_acao(acao, acoes)
             if acao_corrigida:
@@ -135,7 +146,6 @@ def validar_comando(comando, acoes):
 def atuar(acao, dispositivo, atuadores):
     """Executa atuação e retorna resultados"""
     
-    # --- MUDANÇA AQUI ---
     # Se for comando de registro, não faz nada aqui. O JS/outro endpoint cuidará disso.
     if acao == "registrar" and dispositivo == "tarefa":
         print("Ativação do modo de registro via JS")
@@ -179,7 +189,6 @@ def obter_estado():
     fonte = obter_estado_fonte()
     estacao = obter_estado_estacao()
 
-    # --- CORREÇÃO AQUI ---
     # Temperatura ambiente simulada (como estava antes)
     temp_ambiente = random.randint(22, 28) 
 
@@ -215,7 +224,6 @@ def reconhecer_comando():
                 if resultado and "mensagem" in resultado:
                     mensagens.append(resultado["mensagem"])
             
-            # --- MUDANÇA AQUI ---
             # Verifica se é comando de registro de tarefa
             is_registro = (acao == "registrar" and dispositivo_alvo == "tarefa")
             

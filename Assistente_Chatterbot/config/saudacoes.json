@@ -1,0 +1,31 @@
+{
+    "conversas": [
+        {
+            "mensagens": [
+                "olá",
+                "oi",
+                "bom dia",
+                "boa tarde",
+                "boa noite"
+            ],
+            "resposta": "Olá! Sou o Assistente de Bancada. Como posso ajudar com seus equipamentos eletrônicos?"
+        },
+        {
+            "mensagens": [
+                "quem é você?",
+                "qual seu nome?",
+                "o que você faz?"
+            ],
+            "resposta": "Sou um assistente virtual especializado em bancada eletrônica. Posso ajudar com fontes, estações de solda e medições."
+        },
+        {
+            "mensagens": [
+                "tchau",
+                "até logo",
+                "sair",
+                "encerrar"
+            ],
+            "resposta": "Até mais! Boas manutenções."
+        }
+    ]
+}

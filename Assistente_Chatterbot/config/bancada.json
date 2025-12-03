@@ -1,0 +1,44 @@
+{
+    "conversas": [
+        {
+            "mensagens": [
+                "como ligar a fonte de bancada?",
+                "como ativar a fonte?",
+                "passos para ligar a fonte"
+            ],
+            "resposta": "Para ligar a fonte de bancada: 1. Conecte o cabo de força. 2. Pressione o botão Power. 3. Ajuste a tensão e corrente desejadas antes de conectar a carga."
+        },
+        {
+            "mensagens": [
+                "qual a temperatura ideal para solda?",
+                "temperatura ferro de solda",
+                "quantos graus para soldar?"
+            ],
+            "resposta": "Para solda com chumbo (60/40), a temperatura ideal é entre 320°C e 350°C. Para solda lead-free, recomenda-se entre 350°C e 380°C."
+        },
+        {
+            "mensagens": [
+                "como medir tensão com multímetro?",
+                "medir voltagem",
+                "usar multímetro para tensão"
+            ],
+            "resposta": "Para medir tensão: 1. Conecte a ponta preta no COM e a vermelha no V. 2. Selecione a escala de Tensão Contínua (VDC) maior que a esperada. 3. Coloque as pontas em paralelo com o componente."
+        },
+        {
+            "mensagens": [
+                "o que é esd?",
+                "o que significa esd?",
+                "eletricidade estática"
+            ],
+            "resposta": "ESD (Electrostatic Discharge) é a descarga eletrostática. Ela pode danificar componentes sensíveis. Use sempre pulseira antiestática e manta aterrada."
+        },
+        {
+            "mensagens": [
+                "como testar continuidade?",
+                "bip do multímetro",
+                "verificar se fio está quebrado"
+            ],
+            "resposta": "Para testar continuidade: 1. Selecione a escala de diodo/bip no multímetro. 2. Encoste as pontas uma na outra (deve bipar). 3. Toque as extremidades do fio ou trilha."
+        }
+    ]
+}

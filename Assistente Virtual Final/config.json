@@ -2,6 +2,7 @@
     "acoes": [
             {
                 "nome": "ligar",
+                "sinonimos": ["ativar", "acionar"],
                 "dispositivos": [
                     "fonte",
                     "fonte de bancada",
@@ -11,6 +12,7 @@
             },
             {
                 "nome": "desligar",
+                "sinonimos": ["desativar", "parar"],
                 "dispositivos": [
                     "fonte",
                     "fonte de bancada",
@@ -20,6 +22,7 @@
             },
             {
                 "nome": "monitorar",
+                "sinonimos": ["acompanhar", "ver", "checar"],
                 "dispositivos": [
                     "energia",
                     "energia consumida",
@@ -29,6 +32,7 @@
             },
             {
                 "nome": "verificar",
+                "sinonimos": ["checar", "ler", "medir"],
                 "dispositivos": [
                     "temperatura",
                     "temperatura equipamentos",
@@ -37,9 +41,11 @@
             },
             {
                 "nome": "registrar",
+                "sinonimos": ["anotar", "salvar", "iniciar", "nova", "novo", "criar"],
                 "dispositivos": [
                     "tarefa",
-                    "reparo"
+                    "reparo",
+                    "manutenção"
                 ]
             }
     ]
