@@ -8,7 +8,7 @@
                 "boa tarde",
                 "boa noite"
             ],
-            "resposta": "Olá! Sou o Assistente de Bancada. Como posso ajudar com seus equipamentos eletrônicos?"
+            "resposta": "Olá! Bem-vindo à Assistência Técnica Eletrônica. Posso ajudar com status de OS, horários ou dúvidas sobre garantia."
         },
         {
             "mensagens": [
@@ -16,16 +16,17 @@
                 "qual seu nome?",
                 "o que você faz?"
             ],
-            "resposta": "Sou um assistente virtual especializado em bancada eletrônica. Posso ajudar com fontes, estações de solda e medições."
+            "resposta": "Sou o assistente virtual da oficina. Estou aqui para agilizar seu atendimento e tirar dúvidas frequentes."
         },
         {
             "mensagens": [
                 "tchau",
                 "até logo",
                 "sair",
-                "encerrar"
+                "encerrar",
+                "obrigado"
             ],
-            "resposta": "Até mais! Boas manutenções."
+            "resposta": "Agradecemos o contato! Estamos à disposição."
         }
     ]
 }

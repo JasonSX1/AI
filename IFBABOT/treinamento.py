@@ -2,11 +2,16 @@ from chatterbot import ChatBot
 from chatterbot.trainers import ListTrainer
 import json
 
+import os
+
 # Caminhos dos arquivos de conversas
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+CONVERSAS_DIR = os.path.join(BASE_DIR, "conversas")
+
 CONVERSAS = [
-    "C:\\Users\\Aluno\\Desktop\\IFBABOT\\conversas\\saudacoes.json",
-    "C:\\Users\\Aluno\\Desktop\\IFBABOT\\conversas\\informacoes_basicas.json",
-    "C:\\Users\\Aluno\\Desktop\\IFBABOT\\conversas\\sistemas_de_informacao.json"
+    os.path.join(CONVERSAS_DIR, "saudacoes.json"),
+    os.path.join(CONVERSAS_DIR, "informacoes_basicas.json"),
+    os.path.join(CONVERSAS_DIR, "sistemas_de_informacao.json")
 ]
 
 NOME_ROBO = "IFBABot"

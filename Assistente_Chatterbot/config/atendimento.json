@@ -1,0 +1,64 @@
+{
+    "conversas": [
+        {
+            "mensagens": [
+                "qual o horario de funcionamento?",
+                "que horas voces abrem?",
+                "funcionam sabado?",
+                "qual o expediente?"
+            ],
+            "resposta": "Nosso horário de atendimento é de Segunda a Sexta das 08h às 18h, e aos Sábados das 08h às 12h."
+        },
+        {
+            "mensagens": [
+                "como funciona a garantia?",
+                "tem garantia o servico?",
+                "qual o prazo de garantia?",
+                "se der defeito de novo?"
+            ],
+            "resposta": "Oferecemos garantia de 90 dias para todos os serviços realizados, cobrindo mão de obra e as peças substituídas."
+        },
+        {
+            "mensagens": [
+                "preciso fazer backup?",
+                "voces salvam meus arquivos?",
+                "perco meus dados?",
+                "corre risco de perder fotos?"
+            ],
+            "resposta": "Recomendamos fortemente que faça backup dos seus dados antes de deixar o aparelho. Não nos responsabilizamos por perda de dados, especialmente em reparos de placa ou software."
+        },
+        {
+            "mensagens": [
+                "como é o orcamento?",
+                "quanto custa para olhar?",
+                "o orcamento é gratuito?",
+                "qual o processo de analise?"
+            ],
+            "resposta": "O orçamento é gratuito! O processo é: 1. Deixa o aparelho. 2. Análise em até 48h. 3. Enviamos valor pelo WhatsApp. 4. Você aprova e realizamos o reparo."
+        },
+        {
+            "mensagens": [
+                "status os 1001",
+                "verificar os 1001",
+                "como esta a os 1001"
+            ],
+            "resposta": "OS 1001: Aparelho pronto para retirada! Valor: R$ 150,00."
+        },
+        {
+            "mensagens": [
+                "status os 1002",
+                "verificar os 1002",
+                "como esta a os 1002"
+            ],
+            "resposta": "OS 1002: Em análise técnica. Previsão de orçamento para amanhã."
+        },
+        {
+            "mensagens": [
+                "status os 1003",
+                "verificar os 1003",
+                "como esta a os 1003"
+            ],
+            "resposta": "OS 1003: Aguardando peça (Tela Display). Previsão de chegada: 3 dias úteis."
+        }
+    ]
+}
